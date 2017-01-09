@@ -23,16 +23,6 @@ firewall {
                 invalid enable
             }
         }
-        rule 21 {
-            action accept
-            description "webserver http"
-            destination {
-                address 192.168.1.17
-                port 80
-            }
-            log disable
-            protocol tcp_udp
-        }
         rule 22 {
             action accept
             description "webserver sftp"
@@ -186,8 +176,8 @@ interfaces {
     }
 }
 port-forward {
-    auto-firewall enable
-    hairpin-nat enable
+    auto-firewall disable
+    hairpin-nat disable
     lan-interface switch0
     wan-interface eth5
 }
@@ -346,23 +336,6 @@ service {
         older-ciphers disable
     }
     nat {
-        rule 1 {
-            description webserver
-            destination {
-                group {
-                    address-group ADDRv4_eth5
-                }
-                port 80
-            }
-            inbound-interface eth5
-            inside-address {
-                address 192.168.1.17
-                port 80
-            }
-            log disable
-            protocol tcp_udp
-            type destination
-        }
         rule 2 {
             description "webserver sftp"
             destination {
@@ -461,19 +434,7 @@ vpn {
         remote-access {
             authentication {
                 local-users {
-                    username matthew {
-                        password ****************
-                    }
                     username pconwell {
-                        password ****************
-                    }
-                    username pconwell_iphone {
-                        password ****************
-                    }
-                    username pconwell_nexus {
-                        password ****************
-                    }
-                    username tcooper {
                         password ****************
                     }
                 }
