@@ -141,6 +141,8 @@ interfaces {
         address dhcp
         description internet
         dhcp-options {
+            default-route update
+            default-route-distance 210
             name-server no-update
         }
         duplex auto
@@ -326,6 +328,7 @@ service {
             }
         }
         forwarding {
+            cache-size 150
             listen-on switch0
             name-server 192.168.1.2
         }
