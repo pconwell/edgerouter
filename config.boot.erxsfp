@@ -415,7 +415,7 @@
      }
      time-zone America/Chicago
      traffic-analysis {
-         dpi enable
+         dpi disable
          export enable
      }
  }
@@ -437,9 +437,6 @@
          remote-access {
              authentication {
                  local-users {
-                     username pconwell {
-                         password ****************
-                     }
                  }
                  mode local
              }
