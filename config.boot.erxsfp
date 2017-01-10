@@ -1,461 +1,461 @@
-firewall {
-    all-ping enable
-    broadcast-ping disable
-    ipv6-receive-redirects disable
-    ipv6-src-route disable
-    ip-src-route disable
-    log-martians enable
-    name WAN_IN {
-        default-action drop
-        description "WAN to internal"
-        rule 10 {
-            action accept
-            description "Allow established/related"
-            state {
-                established enable
-                related enable
-            }
-        }
-        rule 20 {
-            action drop
-            description "Drop invalid state"
-            state {
-                invalid enable
-            }
-        }
-        rule 22 {
-            action accept
-            description "webserver sftp"
-            destination {
-                address 192.168.1.17
-                port 22
-            }
-            log disable
-            protocol tcp_udp
-        }
-    }
-    name WAN_LOCAL {
-        default-action drop
-        description "WAN to router"
-        rule 10 {
-            action accept
-            description "Allow established/related"
-            state {
-                established enable
-                related enable
-            }
-        }
-        rule 20 {
-            action drop
-            description "Drop invalid state"
-            state {
-                invalid enable
-            }
-        }
-        rule 21 {
-            action accept
-            description ssh
-            destination {
-                port 22
-            }
-            log disable
-            protocol tcp
-        }
-        rule 23 {
-            action accept
-            description IKE
-            destination {
-                port 500
-            }
-            protocol udp
-        }
-        rule 24 {
-            action accept
-            description l2tp
-            destination {
-                port 1701
-            }
-            protocol udp
-        }
-        rule 25 {
-            action accept
-            description esp
-            protocol 50
-        }
-        rule 26 {
-            action accept
-            description nat-t
-            destination {
-                port 4500
-            }
-            protocol udp
-        }
-    }
-    receive-redirects disable
-    send-redirects enable
-    source-validation disable
-    syn-cookies enable
-}
-interfaces {
-    ethernet eth0 {
-        description pihole_dns
-        duplex auto
-        poe {
-            output off
-        }
-        speed auto
-    }
-    ethernet eth1 {
-        description e_center
-        duplex auto
-        poe {
-            output off
-        }
-        speed auto
-    }
-    ethernet eth2 {
-        description server
-        duplex auto
-        poe {
-            output off
-        }
-        speed auto
-    }
-    ethernet eth3 {
-        description WAP
-        duplex auto
-        poe {
-            output off
-        }
-        speed auto
-    }
-    ethernet eth4 {
-        description office
-        duplex auto
-        poe {
-            output off
-        }
-        speed auto
-    }
-    ethernet eth5 {
-        address dhcp
-        description internet
-        dhcp-options {
-            default-route update
-            default-route-distance 210
-            name-server no-update
-        }
-        duplex auto
-        firewall {
-            in {
-                name WAN_IN
-            }
-            local {
-                name WAN_LOCAL
-            }
-        }
-        speed auto
-    }
-    loopback lo {
-    }
-    switch switch0 {
-        address 192.168.1.1/24
-        description Local
-        mtu 1500
-        switch-port {
-            interface eth0 {
-            }
-            interface eth1 {
-            }
-            interface eth2 {
-            }
-            interface eth3 {
-            }
-            interface eth4 {
-            }
-            vlan-aware disable
-        }
-    }
-}
-port-forward {
-    auto-firewall disable
-    hairpin-nat disable
-    lan-interface switch0
-    wan-interface eth5
-}
-service {
-    dhcp-server {
-        disabled false
-        hostfile-update disable
-        shared-network-name LAN {
-            authoritative enable
-            subnet 192.168.1.0/24 {
-                default-router 192.168.1.1
-                dns-server 192.168.1.2
-                lease 86400
-                start 192.168.1.200 {
-                    stop 192.168.1.249
-                }
-                static-mapping Nintendo_Wii_U {
-                    ip-address 192.168.1.24
-                    mac-address 00:ee:22:aa:28:4d
-                }
-                static-mapping amazon_dot {
-                    ip-address 192.168.1.135
-                    mac-address 44:65:0d:36:b4:c5
-                }
-                static-mapping amazon_echo {
-                    ip-address 192.168.1.125
-                    mac-address 74:c2:46:7e:28:d8
-                }
-                static-mapping android_tablet {
-                    ip-address 192.168.1.153
-                    mac-address D0:87:E2:40:D4:A2
-                }
-                static-mapping appleTV_bedroom {
-                    ip-address 192.168.1.131
-                    mac-address d0:03:4b:22:ba:88
-                }
-                static-mapping appleTV_livingroom {
-                    ip-address 192.168.1.21
-                    mac-address 9c:20:7b:ea:60:ce
-                }
-                static-mapping bluray_player {
-                    ip-address 192.168.1.22
-                    mac-address ac:9b:0a:9d:fd:a6
-                }
-                static-mapping ecobee_main_floor {
-                    ip-address 192.168.1.129
-                    mac-address 44:61:32:f8:3a:2e
-                }
-                static-mapping ecobee_upstairs {
-                    ip-address 192.168.1.139
-                    mac-address 44:61:32:e1:00:14
-                }
-                static-mapping entertainment_switch {
-                    ip-address 192.168.1.20
-                    mac-address 98:DE:D0:DF:32:83
-                }
-                static-mapping livingroom_TV {
-                    ip-address 192.168.1.23
-                    mac-address 00:12:fb:9f:d8:88
-                }
-                static-mapping mediaserver_eth0 {
-                    ip-address 192.168.1.11
-                    mac-address 00:15:C5:FA:12:FB
-                }
-                static-mapping mediaserver_eth1 {
-                    ip-address 192.168.1.12
-                    mac-address 00:15:C5:FA:12:FC
-                }
-                static-mapping nethear_wap {
-                    ip-address 192.168.1.150
-                    mac-address 20:E5:2A:2A:28:45
-                }
-                static-mapping office_printer {
-                    ip-address 192.168.1.35
-                    mac-address 30:05:5c:16:17:f9
-                }
-                static-mapping office_switch {
-                    ip-address 192.168.1.30
-                    mac-address 18:a6:f7:06:b5:af
-                }
-                static-mapping patrick_laptop_eth0 {
-                    ip-address 192.168.1.31
-                    mac-address 5c:26:0a:16:fc:a0
-                }
-                static-mapping patrick_laptop_wlan0 {
-                    ip-address 192.168.1.155
-                    mac-address 3C:A9:F4:5D:54:A8
-                }
-                static-mapping patrick_nexus_5 {
-                    ip-address 192.168.1.151
-                    mac-address 64:bc:0c:4c:3f:3b
-                }
-                static-mapping patrick_nexus_6 {
-                    ip-address 192.168.1.156
-                    mac-address F8:CF:C5:95:71:6E
-                }
-                static-mapping patrick_work_phone {
-                    ip-address 192.168.1.154
-                    mac-address 00:56:CD:63:94:88
-                }
-                static-mapping phillip_hue {
-                    ip-address 192.168.1.28
-                    mac-address 00:17:88:17:88:4C
-                }
-                static-mapping pihole {
-                    ip-address 192.168.1.2
-                    mac-address b8:27:eb:46:c4:2f
-                }
-                static-mapping samsung_smartthings {
-                    ip-address 192.168.1.29
-                    mac-address D0:52:A8:A6:65:B0
-                }
-                static-mapping server_switch {
-                    ip-address 192.168.1.10
-                    mac-address 98:DE:D0:7A:CA:14
-                }
-                static-mapping trisha_desktop {
-                    ip-address 192.168.1.32
-                    mac-address 18:66:DA:06:83:14
-                }
-                static-mapping trisha_nexus_5 {
-                    ip-address 192.168.1.152
-                    mac-address 64:BC:0C:51:80:C0
-                }
-                static-mapping vm_testbox {
-                    ip-address 192.168.1.15
-                    mac-address 08:00:27:91:5E:7F
-                }
-                static-mapping vm_webbox {
-                    ip-address 192.168.1.17
-                    mac-address 08:00:27:5F:72:C1
-                }
-            }
-        }
-        use-dnsmasq disable
-    }
-    dns {
-        dynamic {
-            interface eth5 {
-                service afraid {
-                    host-name pconwell.mooo.com
-                    login pconwell
-                    password ****************
-                    server freedns.afraid.org
-                }
-            }
-        }
-        forwarding {
-            cache-size 150
-            listen-on switch0
-            name-server 192.168.1.2
-        }
-    }
-    gui {
-        http-port 80
-        https-port 443
-        older-ciphers disable
-    }
-    nat {
-        rule 2 {
-            description "webserver sftp"
-            destination {
-                group {
-                    address-group ADDRv4_eth5
-                }
-                port 2222
-            }
-            inbound-interface eth5
-            inside-address {
-                address 192.168.1.17
-                port 22
-            }
-            log disable
-            protocol tcp_udp
-            source {
-            }
-            type destination
-        }
-        rule 5010 {
-            description "masquerade for WAN"
-            log disable
-            outbound-interface eth5
-            protocol all
-            type masquerade
-        }
-    }
-    ssh {
-        disable-password-authentication
-        port 22
-        protocol-version v2
-    }
-}
-system {
-    host-name ubnt
-    login {
-        user pconwell {
-            authentication {
-                encrypted-password ****************
-                plaintext-password ****************
-                public-keys rsa-key-20161214 {
-                    key ****************
-                    type ssh-rsa
-                }
-            }
-            full-name "Patrick Conwell"
-            level admin
-        }
-    }
-    name-server 192.168.1.2
-    ntp {
-        server 0.ubnt.pool.ntp.org {
-        }
-        server 1.ubnt.pool.ntp.org {
-        }
-        server 2.ubnt.pool.ntp.org {
-        }
-        server 3.ubnt.pool.ntp.org {
-        }
-    }
-    offload {
-        hwnat enable
-        ipsec enable
-    }
-    syslog {
-        global {
-            facility all {
-                level notice
-            }
-            facility protocols {
-                level debug
-            }
-        }
-    }
-    time-zone America/Chicago
-    traffic-analysis {
-        dpi disable
-        export enable
-    }
-}
-vpn {
-    ipsec {
-        auto-firewall-nat-exclude enable
-        ipsec-interfaces {
-            interface eth5
-        }
-        nat-networks {
-            allowed-network 0.0.0.0/0 {
-            }
-            allowed-network 192.168.1.0/24 {
-            }
-        }
-        nat-traversal enable
-    }
-    l2tp {
-        remote-access {
-            authentication {
-                local-users {
-                }
-                mode local
-            }
-            client-ip-pool {
-                start 192.168.1.250
-                stop 192.168.1.254
-            }
-            dhcp-interface eth5
-            dns-servers {
-                server-1 192.168.1.2
-                server-2 192.168.1.2
-            }
-            ipsec-settings {
-                authentication {
-                    mode pre-shared-secret
-                    pre-shared-secret ****************
-                }
-                ike-lifetime 3600
-            }
-        }
-    }
-}
+ firewall {
+     all-ping enable
+     broadcast-ping disable
+     ipv6-receive-redirects disable
+     ipv6-src-route disable
+     ip-src-route disable
+     log-martians enable
+     name WAN_IN {
+         default-action drop
+         description "WAN to internal"
+         rule 10 {
+             action accept
+             description "Allow established/related"
+             state {
+                 established enable
+                 related enable
+             }
+         }
+         rule 20 {
+             action drop
+             description "Drop invalid state"
+             state {
+                 invalid enable
+             }
+         }
+         rule 22 {
+             action accept
+             description "webserver sftp"
+             destination {
+                 address 192.168.1.17
+                 port 22
+             }
+             log disable
+             protocol tcp_udp
+         }
+     }
+     name WAN_LOCAL {
+         default-action drop
+         description "WAN to router"
+         rule 10 {
+             action accept
+             description "Allow established/related"
+             state {
+                 established enable
+                 related enable
+             }
+         }
+         rule 20 {
+             action drop
+             description "Drop invalid state"
+             state {
+                 invalid enable
+             }
+         }
+         rule 21 {
+             action accept
+             description ssh
+             destination {
+                 port 22
+             }
+             log disable
+             protocol tcp
+         }
+         rule 23 {
+             action accept
+             description IKE
+             destination {
+                 port 500
+             }
+             protocol udp
+         }
+         rule 24 {
+             action accept
+             description l2tp
+             destination {
+                 port 1701
+             }
+             protocol udp
+         }
+         rule 25 {
+             action accept
+             description esp
+             protocol 50
+         }
+         rule 26 {
+             action accept
+             description nat-t
+             destination {
+                 port 4500
+             }
+             protocol udp
+         }
+     }
+     receive-redirects disable
+     send-redirects enable
+     source-validation disable
+     syn-cookies enable
+ }
+ interfaces {
+     ethernet eth0 {
+         description pihole_dns
+         duplex auto
+         poe {
+             output off
+         }
+         speed auto
+     }
+     ethernet eth1 {
+         description e_center
+         duplex auto
+         poe {
+             output off
+         }
+         speed auto
+     }
+     ethernet eth2 {
+         description server
+         duplex auto
+         poe {
+             output off
+         }
+         speed auto
+     }
+     ethernet eth3 {
+         description WAP
+         duplex auto
+         poe {
+             output off
+         }
+         speed auto
+     }
+     ethernet eth4 {
+         description office
+         duplex auto
+         poe {
+             output off
+         }
+         speed auto
+     }
+     ethernet eth5 {
+         address dhcp
+         description internet
+         dhcp-options {
+             default-route update
+             default-route-distance 210
+             name-server no-update
+         }
+         duplex auto
+         firewall {
+             in {
+                 name WAN_IN
+             }
+             local {
+                 name WAN_LOCAL
+             }
+         }
+         speed auto
+     }
+     loopback lo {
+     }
+     switch switch0 {
+         address 192.168.1.1/24
+         description Local
+         mtu 1500
+         switch-port {
+             interface eth0 {
+             }
+             interface eth1 {
+             }
+             interface eth2 {
+             }
+             interface eth3 {
+             }
+             interface eth4 {
+             }
+             vlan-aware disable
+         }
+     }
+ }
+ port-forward {
+     auto-firewall disable
+     hairpin-nat disable
+     lan-interface switch0
+     wan-interface eth5
+ }
+ service {
+     dhcp-server {
+         disabled false
+         hostfile-update disable
+         shared-network-name LAN {
+             authoritative enable
+             subnet 192.168.1.0/24 {
+                 default-router 192.168.1.1
+                 dns-server 192.168.1.2
+                 lease 86400
+                 start 192.168.1.200 {
+                     stop 192.168.1.249
+                 }
+                 static-mapping Nintendo_Wii_U {
+                     ip-address 192.168.1.24
+                     mac-address 00:ee:22:aa:28:4d
+                 }
+                 static-mapping amazon_dot {
+                     ip-address 192.168.1.135
+                     mac-address 44:65:0d:36:b4:c5
+                 }
+                 static-mapping amazon_echo {
+                     ip-address 192.168.1.125
+                     mac-address 74:c2:46:7e:28:d8
+                 }
+                 static-mapping android_tablet {
+                     ip-address 192.168.1.153
+                     mac-address D0:87:E2:40:D4:A2
+                 }
+                 static-mapping appleTV_bedroom {
+                     ip-address 192.168.1.131
+                     mac-address d0:03:4b:22:ba:88
+                 }
+                 static-mapping appleTV_livingroom {
+                     ip-address 192.168.1.21
+                     mac-address 9c:20:7b:ea:60:ce
+                 }
+                 static-mapping bluray_player {
+                     ip-address 192.168.1.22
+                     mac-address ac:9b:0a:9d:fd:a6
+                 }
+                 static-mapping ecobee_main_floor {
+                     ip-address 192.168.1.129
+                     mac-address 44:61:32:f8:3a:2e
+                 }
+                 static-mapping ecobee_upstairs {
+                     ip-address 192.168.1.139
+                     mac-address 44:61:32:e1:00:14
+                 }
+                 static-mapping entertainment_switch {
+                     ip-address 192.168.1.20
+                     mac-address 98:DE:D0:DF:32:83
+                 }
+                 static-mapping livingroom_TV {
+                     ip-address 192.168.1.23
+                     mac-address 00:12:fb:9f:d8:88
+                 }
+                 static-mapping mediaserver_eth0 {
+                     ip-address 192.168.1.11
+                     mac-address 00:15:C5:FA:12:FB
+                 }
+                 static-mapping mediaserver_eth1 {
+                     ip-address 192.168.1.12
+                     mac-address 00:15:C5:FA:12:FC
+                 }
+                 static-mapping nethear_wap {
+                     ip-address 192.168.1.150
+                     mac-address 20:E5:2A:2A:28:45
+                 }
+                 static-mapping office_printer {
+                     ip-address 192.168.1.35
+                     mac-address 30:05:5c:16:17:f9
+                 }
+                 static-mapping office_switch {
+                     ip-address 192.168.1.30
+                     mac-address 18:a6:f7:06:b5:af
+                 }
+                 static-mapping patrick_laptop_eth0 {
+                     ip-address 192.168.1.31
+                     mac-address 5c:26:0a:16:fc:a0
+                 }
+                 static-mapping patrick_laptop_wlan0 {
+                     ip-address 192.168.1.155
+                     mac-address 3C:A9:F4:5D:54:A8
+                 }
+                 static-mapping patrick_nexus_5 {
+                     ip-address 192.168.1.151
+                     mac-address 64:bc:0c:4c:3f:3b
+                 }
+                 static-mapping patrick_nexus_6 {
+                     ip-address 192.168.1.156
+                     mac-address F8:CF:C5:95:71:6E
+                 }
+                 static-mapping patrick_work_phone {
+                     ip-address 192.168.1.154
+                     mac-address 00:56:CD:63:94:88
+                 }
+                 static-mapping phillip_hue {
+                     ip-address 192.168.1.28
+                     mac-address 00:17:88:17:88:4C
+                 }
+                 static-mapping pihole {
+                     ip-address 192.168.1.2
+                     mac-address b8:27:eb:46:c4:2f
+                 }
+                 static-mapping samsung_smartthings {
+                     ip-address 192.168.1.29
+                     mac-address D0:52:A8:A6:65:B0
+                 }
+                 static-mapping server_switch {
+                     ip-address 192.168.1.10
+                     mac-address 98:DE:D0:7A:CA:14
+                 }
+                 static-mapping trisha_desktop {
+                     ip-address 192.168.1.32
+                     mac-address 18:66:DA:06:83:14
+                 }
+                 static-mapping trisha_nexus_5 {
+                     ip-address 192.168.1.152
+                     mac-address 64:BC:0C:51:80:C0
+                 }
+                 static-mapping vm_testbox {
+                     ip-address 192.168.1.15
+                     mac-address 08:00:27:91:5E:7F
+                 }
+                 static-mapping vm_webbox {
+                     ip-address 192.168.1.17
+                     mac-address 08:00:27:5F:72:C1
+                 }
+             }
+         }
+         use-dnsmasq disable
+     }
+     dns {
+         dynamic {
+             interface eth5 {
+                 service afraid {
+                     host-name pconwell.mooo.com
+                     login pconwell
+                     password ****************
+                     server freedns.afraid.org
+                 }
+             }
+         }
+         forwarding {
+             cache-size 150
+             listen-on switch0
+             name-server 192.168.1.2
+         }
+     }
+     gui {
+         http-port 80
+         https-port 443
+         older-ciphers disable
+     }
+     nat {
+         rule 2 {
+             description "webserver sftp"
+             destination {
+                 group {
+                     address-group ADDRv4_eth5
+                 }
+                 port 2222
+             }
+             inbound-interface eth5
+             inside-address {
+                 address 192.168.1.17
+                 port 22
+             }
+             log disable
+             protocol tcp_udp
+             source {
+             }
+             type destination
+         }
+         rule 5010 {
+             description "masquerade for WAN"
+             log disable
+             outbound-interface eth5
+             protocol all
+             type masquerade
+         }
+     }
+     ssh {
+         disable-password-authentication
+         port 22
+         protocol-version v2
+     }
+ }
+ system {
+     host-name ubnt
+     login {
+         user pconwell {
+             authentication {
+                 encrypted-password ****************
+                 plaintext-password ****************
+                 public-keys rsa-key-20161214 {
+                     key ****************
+                     type ssh-rsa
+                 }
+             }
+             full-name "Patrick Conwell"
+             level admin
+         }
+     }
+     name-server 192.168.1.2
+     ntp {
+         server 0.ubnt.pool.ntp.org {
+         }
+         server 1.ubnt.pool.ntp.org {
+         }
+         server 2.ubnt.pool.ntp.org {
+         }
+         server 3.ubnt.pool.ntp.org {
+         }
+     }
+     offload {
+         hwnat enable
+         ipsec enable
+     }
+     syslog {
+         global {
+             facility all {
+                 level notice
+             }
+             facility protocols {
+                 level debug
+             }
+         }
+     }
+     time-zone America/Chicago
+     traffic-analysis {
+         dpi disable
+         export enable
+     }
+ }
+ vpn {
+     ipsec {
+         auto-firewall-nat-exclude enable
+         ipsec-interfaces {
+             interface eth5
+         }
+         nat-networks {
+             allowed-network 0.0.0.0/0 {
+             }
+             allowed-network 192.168.1.0/24 {
+             }
+         }
+         nat-traversal enable
+     }
+     l2tp {
+         remote-access {
+             authentication {
+                 local-users {
+                 }
+                 mode local
+             }
+             client-ip-pool {
+                 start 192.168.1.250
+>                stop 192.168.1.250
+             }
+             dhcp-interface eth5
+             dns-servers {
+                 server-1 192.168.1.2
+                 server-2 192.168.1.2
+             }
+             ipsec-settings {
+                 authentication {
+                     mode pre-shared-secret
+                     pre-shared-secret ****************
+                 }
+                 ike-lifetime 3600
+             }
+         }
+     }
+ }
