@@ -442,7 +442,7 @@
              }
              client-ip-pool {
                  start 192.168.1.250
->                stop 192.168.1.250
+                 stop 192.168.1.251
              }
              dhcp-interface eth5
              dns-servers {
