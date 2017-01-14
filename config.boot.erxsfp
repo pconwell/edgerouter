@@ -436,3 +436,41 @@
          export enable
      }
  }
+ vpn {
+     ipsec {
+         ipsec-interfaces {
+             interface eth5
+         }
+         nat-networks {
+             allowed-network 0.0.0.0/0 {
+             }
+         }
+         nat-traversal enable
+     }
+     l2tp {
+         remote-access {
+             authentication {
+                 local-users {
+                     username pconwell {
+                     }
+                 }
+                 mode local
+             }
+             client-ip-pool {
+                 start 192.168.1.250
+                 stop 192.168.1.251
+             }
+             dhcp-interface eth5
+             dns-servers {
+                 server-1 192.168.1.2
+             }
+             ipsec-settings {
+                 authentication {
+                     mode pre-shared-secret
+                     pre-shared-secret ****************
+                 }
+                 ike-lifetime 3600
+             }
+         }
+     }
+ }
