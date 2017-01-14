@@ -205,6 +205,10 @@ service {
                 start 192.168.1.200 {
                     stop 192.168.1.249
                 }
+                static-mapping Chromecast {
+                    ip-address 192.168.1.124
+                    mac-address 6c:ad:f8:33:99:78
+                }
                 static-mapping Nintendo_Wii_U {
                     ip-address 192.168.1.24
                     mac-address 00:ee:22:aa:28:4d
@@ -321,6 +325,10 @@ service {
                     ip-address 192.168.1.17
                     mac-address 08:00:27:5F:72:C1
                 }
+                static-mapping wemo_office {
+                    ip-address 192.168.1.133
+                    mac-address 94:10:3e:30:c5:b1
+                }
             }
         }
         use-dnsmasq disable
@@ -335,11 +343,6 @@ service {
                     server freedns.afraid.org
                 }
             }
-        }
-        forwarding {
-            cache-size 150
-            listen-on switch0
-            name-server 192.168.1.2
         }
     }
     gui {
