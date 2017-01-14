@@ -460,7 +460,6 @@
              dhcp-interface eth5
              dns-servers {
                  server-1 192.168.1.2
-                 server-2 192.168.1.2
              }
              ipsec-settings {
                  authentication {
