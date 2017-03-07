@@ -59,6 +59,7 @@
              destination {
                  port 22
              }
+             disable
              log disable
              protocol tcp
          }
@@ -194,10 +195,11 @@
  }
  service {
      dhcp-server {
-         disabled false
+         disabled true
          hostfile-update disable
          shared-network-name LAN {
              authoritative enable
+             disable
              subnet 192.168.1.0/24 {
                  default-router 192.168.1.1
                  dns-server 192.168.1.2
@@ -240,10 +242,6 @@
                  static-mapping ecobee_main_floor {
                      ip-address 192.168.1.129
                      mac-address 44:61:32:f8:3a:2e
-                 }
-                 static-mapping ecobee_upstairs {
-                     ip-address 192.168.1.139
-                     mac-address 44:61:32:e1:00:14
                  }
                  static-mapping ecobee_upstairs_2 {
                      ip-address 192.168.1.138
@@ -434,43 +432,5 @@
      traffic-analysis {
          dpi disable
          export enable
-     }
- }
- vpn {
-     ipsec {
-         ipsec-interfaces {
-             interface eth5
-         }
-         nat-networks {
-             allowed-network 0.0.0.0/0 {
-             }
-         }
-         nat-traversal enable
-     }
-     l2tp {
-         remote-access {
-             authentication {
-                 local-users {
-                     username pconwell {
-                     }
-                 }
-                 mode local
-             }
-             client-ip-pool {
-                 start 192.168.1.250
-                 stop 192.168.1.251
-             }
-             dhcp-interface eth5
-             dns-servers {
-                 server-1 192.168.1.2
-             }
-             ipsec-settings {
-                 authentication {
-                     mode pre-shared-secret
-                     pre-shared-secret ****************
-                 }
-                 ike-lifetime 3600
-             }
-         }
      }
  }
