@@ -30,7 +30,6 @@
                  address 192.168.1.17
                  port 22
              }
-             disable
              log disable
              protocol tcp_udp
          }
@@ -361,7 +360,6 @@
                  }
                  port 2222
              }
-             disable
              inbound-interface eth5
              inside-address {
                  address 192.168.1.17
@@ -382,7 +380,6 @@
          }
      }
      ssh {
-         disable-password-authentication
          port 22
          protocol-version v2
      }
@@ -390,6 +387,14 @@
  system {
      host-name ubnt
      login {
+         user codeguard {
+             authentication {
+                 encrypted-password ****************
+                 plaintext-password ****************
+             }
+             full-name codeguard
+             level operator
+         }
          user pconwell {
              authentication {
                  encrypted-password ****************
