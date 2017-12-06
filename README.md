@@ -48,3 +48,7 @@ You just need to edit /etc/bash_completion.d/vyatta-cfg and towards the top-midd
       }
 
 You just need to edit yours to add the last line '/config/user-data/github-backup.sh' (assuming you saved your script from above at that location with that name). That's it. Now every time you configure then commit; save;, you will automatically back up your config file to github. I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
+
+****
+
+You can also use the `dnsmasq.adlist.conf` file to create a DNS level ad blocker, but you are probably better off installing pihole to a VM or docker or a raspberry pi.
