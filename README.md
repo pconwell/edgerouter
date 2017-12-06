@@ -47,7 +47,7 @@ You just need to edit /etc/bash_completion.d/vyatta-cfg. About 20% down the file
        /home/pconwell/github-backup.sh
       }
 
-You just need to edit yours to add the last line '/config/user-data/github-backup.sh' (assuming you saved your script from above at that location with that name). That's it. Now every time you configure then commit; save;, you will automatically back up your config file to github. I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
+You just need to edit yours to add the last line `/home/pconwell/github-backup.sh` (assuming you saved your script from above at that location with that name). That's it. Now every time you configure then commit; save; exit; you will automatically back up your config file to github. I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
 
 ****
 
