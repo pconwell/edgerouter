@@ -52,3 +52,5 @@ You just need to edit yours to add the last line `/home/pconwell/github-backup.s
 ****
 
 You can also use the `dnsmasq.adlist.conf` file to create a DNS level ad blocker, but you are probably better off installing pihole to a VM or docker or a raspberry pi.
+
+If you do want to use `dnsmasq.adlist.conf`, you just need to place that file on your edgerouter and then set up a cron job to run at whatever interval you wish. I'd suggest running the script either once a day or once a week.
