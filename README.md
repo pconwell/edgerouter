@@ -4,7 +4,7 @@ There are probably better ways to do this, but this is what I came up with.
 
 ****
 
-**ONE**. Create a github account and then create a repository called 'edgerouter'
+**ONE**. Create a github account and then create a repository called 'edgerouter'. Next generate a Personal Access Token. I'm not 100% sure what priliges are needed for the PAT, but I tried once without any extra privliges selected and it didn't work (kept returning a cryptic 404 not found error) and I generated a 2nd token with the majority of priviligies selected and it worked. I suspect you just need 'repo_hook' but again, I have not confirmed what exact privligies are needed for the PAT to work correctly with this script.
 
 **TWO**. Then, you need to get the sha hash of your current backup file:
 
