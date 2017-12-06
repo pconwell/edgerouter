@@ -20,13 +20,13 @@ You want to be careful here because 'cli-shell-api showCfg' will show you your u
 
 **FOUR**. Now upload the config file to github:
 
-     curl -i -X PUT -H 'Authorization: token YOUR-PRIVATE-GITHUB-API-KEY-HERE' -d '{"path": "config.bak", "message": "automated backup", "content": '"$temp64"', "sha": '"$hash"', "branch": "master"}' https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
+     curl --request PUT --user "pconwell:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
 
-I'm not really sure what the 'path' variable does, but it seems to be necessary. You can see that the content of the API call is your config file from step 3 and the sha hash is the hash from step 2. Again, you will want to change your username and repo name to match your github file. Also, if you have a different router you may want to change the 'erxsfp' part, but that's personal preference.
+You can see that the content of the API call is your config file from step 3 and the sha hash is the hash from step 2. Again, you will want to change your username and repo name to match your github file. Also, if you have a different router you may want to change the 'erxsfp' part, but that's personal preference.
 
 That's all that's needed to back your config up to github. From here you have a few options, but the most automated way is to run the script each time you save a configuration using the CLI (not sure how/if this would work through the GUI).
 
-You just need to edit /etc/bash_completion.d/vyatta-cfg and towards the top-middle of the file you will see `save ()` and something like
+You just need to edit /etc/bash_completion.d/vyatta-cfg. About 20% down the file you will see `save ()` and something like
 
      save ()
      {
@@ -44,7 +44,7 @@ You just need to edit /etc/bash_completion.d/vyatta-cfg and towards the top-midd
        eval "sudo sg vyattacfg \"umask 0002 ; $save_cmd\""
        sync ; sync
        vyatta_cli_shell_api unmarkSessionUnsaved
-       /config/user-data/github-backup.sh
+       /home/pconwell/github-backup.sh
       }
 
 You just need to edit yours to add the last line '/config/user-data/github-backup.sh' (assuming you saved your script from above at that location with that name). That's it. Now every time you configure then commit; save;, you will automatically back up your config file to github. I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
