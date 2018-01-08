@@ -4,7 +4,7 @@ There are probably better ways to do this, but this is what I came up with.
 
 ****
 
-**ONE**. Create a github account and then create a repository called 'edgerouter'. Next [generate a Personal Access Token](https://github.com/settings/tokens). I'm not 100% sure what priliges are needed for the PAT, but I tried once without any extra privliges selected and it didn't work (kept returning a cryptic 404 not found error) and I generated a 2nd token with the majority of priviligies selected and it worked. I suspect you just need 'repo_hook' but again, I have not confirmed what exact privligies are needed for the PAT to work correctly with this script.
+**ONE**. Create a github account and then create a repository called 'edgerouter'. Next [generate a Personal Access Token](https://github.com/settings/tokens). The only permission you need is `public_repo`, you can leave everything else unchecked.
 
 **TWO**. Then, you need to get the sha hash of your current backup file:
 
@@ -47,7 +47,9 @@ You just need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% 
        /home/pconwell/github-backup.sh
       }
 
-You just need to edit yours to add the last line `/home/pconwell/github-backup.sh` (assuming you saved your script from above at that location with that name -- which you probably didn't, so you will want to change your location and file name). That's it. Now every time you configure then commit; save; exit; you will automatically back up your config file to github. Specifically, this happens during the `save` step. 
+You just need to edit yours to add the last line `/home/pconwell/github-backup.sh` (assuming you saved your script from above at that location with that name -- which you probably didn't, so you will want to change your location and file name). Also, don't forget to make your script executable with `chmod +x github-backup.sh`.
+
+That's it. Now every time you configure then commit; save; exit; you will automatically back up your config file to github. Specifically, this happens during the `save` step. 
 
 I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
 
