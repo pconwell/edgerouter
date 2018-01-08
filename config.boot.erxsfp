@@ -70,7 +70,7 @@
  }
  interfaces {
      ethernet eth0 {
-         description Cameras
+         description "NVR Cameras"
          duplex auto
          poe {
              output off
@@ -78,11 +78,8 @@
          speed auto
      }
      ethernet eth1 {
-         description Office
+         description Local
          duplex auto
-         poe {
-             output off
-         }
          speed auto
      }
      ethernet eth2 {
@@ -91,7 +88,7 @@
          speed auto
      }
      ethernet eth3 {
-         description Server
+         description "R710 Server"
          duplex auto
          poe {
              output off
@@ -99,7 +96,7 @@
          speed auto
      }
      ethernet eth4 {
-         description WAP
+         description "Unifi AP"
          duplex auto
          poe {
              output 24v
@@ -162,13 +159,10 @@
                  default-router 192.168.1.1
                  dns-server 192.168.1.2
                  dns-server 8.8.8.8
+                 domain-name local
                  lease 86400
-                 start 192.168.1.100 {
-                     stop 192.168.1.199
-                 }
-                 static-mapping PE850-proxmox {
-                     ip-address 192.168.1.40
-                     mac-address 00:15:c5:fa:12:fb
+                 start 192.168.1.200 {
+                     stop 192.168.1.250
                  }
                  static-mapping adblocker {
                      ip-address 192.168.1.2
@@ -178,34 +172,35 @@
                      ip-address 192.168.1.24
                      mac-address 00:0c:29:7a:57:b1
                  }
-                 static-mapping esxi-host {
+                 static-mapping esxi {
                      ip-address 192.168.1.20
                      mac-address 00:24:e8:63:65:89
-                 }
-                 static-mapping esxi-windows {
-                     ip-address 192.168.1.22
-                     mac-address 00:0c:29:d2:5d:b3
                  }
                  static-mapping files {
                      ip-address 192.168.1.25
                      mac-address 00:0c:29:5f:18:32
                  }
-                 static-mapping fileserver {
-                     ip-address 192.168.1.23
-                     mac-address 00:0c:29:12:48:e1
+                 static-mapping jarvis-lan {
+                     ip-address 192.168.1.156
+                     mac-address 5c:26:0a:16:fc:a0
                  }
-                 static-mapping idrac-r710 {
-                     ip-address 192.168.1.19
-                     mac-address 00:24:e8:63:65:91
+                 static-mapping jarvis-wlan {
+                     ip-address 192.168.1.157
+                     mac-address 3c:a9:f4:5d:54:a8
                  }
-                 static-mapping office-printer {
-                     ip-address 192.168.1.30
-                     mac-address 30:05:5c:16:17:f9
+                 static-mapping patrick-iPhone {
+                     ip-address 192.168.1.191
+                     mac-address 00:56:cd:63:94:88
                  }
-                 static-mapping plexserver.local {
-                     ip-address 192.168.1.21
-                     mac-address 00:0c:29:eb:ed:b5
+                 static-mapping patrick-nexus {
+                     ip-address 192.168.1.190
+                     mac-address 64:bc:0c:4c:3f:3b
                  }
+                 static-mapping unifi-ap {
+                     ip-address 192.168.1.5
+                     mac-address 80:2a:a8:59:54:53
+                 }
+                 unifi-controller 192.168.1.24
              }
          }
          use-dnsmasq disable
@@ -225,17 +220,14 @@
          forwarding {
              cache-size 150
              listen-on switch0
+             name-server 192.168.1.2
              name-server 8.8.8.8
-             name-server 8.8.4.4
-             options localise-queries
-             options domain-needed
-             system
          }
      }
      gui {
          http-port 80
          https-port 443
-         older-ciphers disable
+         older-ciphers enable
      }
      nat {
          rule 1 {
@@ -282,9 +274,6 @@
          port 22
          protocol-version v2
      }
-     unms {
-         disable
-     }
  }
  system {
      host-name ubnt
@@ -292,6 +281,10 @@
          user pconwell {
              authentication {
                  encrypted-password ****************
+                 public-keys patrick@jarvis {
+                     key ****************
+                     type ssh-rsa
+                 }
              }
              level admin
          }
@@ -311,11 +304,6 @@
          hwnat enable
          ipsec enable
      }
-     static-host-mapping {
-         host-name plexserver {
-             inet 192.168.1.21
-         }
-     }
      syslog {
          global {
              facility all {
@@ -327,8 +315,4 @@
          }
      }
      time-zone America/Chicago
-     traffic-analysis {
-         dpi disable
-         export enable
-     }
  }
