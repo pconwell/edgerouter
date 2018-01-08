@@ -78,13 +78,19 @@
          speed auto
      }
      ethernet eth1 {
-         description Local
+         description Office
          duplex auto
+         poe {
+             output off
+         }
          speed auto
      }
      ethernet eth2 {
-         description Local
+         description "Ent Center"
          duplex auto
+         poe {
+             output off
+         }
          speed auto
      }
      ethernet eth3 {
@@ -222,12 +228,14 @@
              listen-on switch0
              name-server 192.168.1.2
              name-server 8.8.8.8
+             options localise-queries
+             options domain-needed
          }
      }
      gui {
          http-port 80
          https-port 443
-         older-ciphers enable
+         older-ciphers disable
      }
      nat {
          rule 1 {
@@ -271,6 +279,7 @@
          }
      }
      ssh {
+         disable-password-authentication
          port 22
          protocol-version v2
      }
