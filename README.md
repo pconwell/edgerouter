@@ -6,15 +6,19 @@
 4. Create a file named `github-backup.sh` in your home directory with the following contents:
 
 ```bash
-hash='"'`curl  https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp | grep sha | cut -d '"' -f4`'"'
+hash='"'`curl  https://api.github.com/repos/username/repo/contents/config.file | grep sha | cut -d '"' -f4`'"'
 temp64='"'`/bin/cli-shell-api showCfg --show-hide-secrets | base64 | tr -d '\n'`'"'
-curl --request PUT --user "pconwell:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
+curl --request PUT --user "USER:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/username/repo/contents/config.file
 ```
 
-> Make sure to replace TOKEN with your github auth token
+> Make sure to replace USER:TOKEN with your github username and auth token
 
 5. Make the script executable with `chmod +x github-backup.sh`
-6. edit the bash completion script to automatically upload your config when you `save` -- `sudo vi /etc/bash_completion.d/vyatta-cfg`. Add `/home/username/github-backup.sh` under `save()`.
+6. edit the bash completion script to automatically upload your config when you `save` -- `sudo vi /etc/bash_completion.d/vyatta-cfg`. Add `/home/user/github-backup.sh` under `save()`.
+
+OR
+
+6. create a crontab to run `home/user/github-backup.sh`.
 
 ## Introduction
 
@@ -128,19 +132,38 @@ Now that we know what needs to go in the script, we will save it all to a file. 
 
 At this point, you have several different options. You can manually run the script file by typing `./github-backup.sh` at the command prompt, you can set up a cronjob, or you *could* even just manually type out or copy/paste the commands line-by-line into the command prompt (which would defeat the whole purpose of automating this).
 
-My preference is to run the script when I commit a change in the CLI. If you never use the CLI, a cronjob to run the script every 24 hours (or whatever you want) may be better because if you make a change in the GUI it does not trigger an upload to github. There is no harm in uploading the same config file -- github will ignore the upload if there are no changes to save. I'll show examples for running the backup script both as a cronjob and after committing changes in the CLI.
+If you never use the CLI, a cronjob to run the script every 24 hours (or whatever you want) may be better because if you make a change in the GUI it does not trigger an upload to github. There is no harm in uploading the same config file -- github will ignore the upload if there are no changes to save -- so don't worry too much about running a cronjob if you haven't made any changes. I'll show examples for running the backup script both as a cronjob and after committing changes in the CLI.
 
 I will warn you, you probably don't want to use both. For some reason that I don't understand, if you run the script as a cronjob, it inserts an extra blank line at the begining of each line. If you run the script as part of a commit workflow, it does *not* insert the blank space. While this don't really matter, it makes it hard to compare file version on github because it thinks EVERY line is different. If we only use one or the other, we can use github's cool comparison feature to easy see what changed between versions.
 
-### Crontab
+#### Crontab
+
+This will automatically run the backup script at a set interval regardless if changes have been made or not. Don't worry, github will ignore config files that have not changed. In my example, I run the script once an hour, every hour, every day. 
+
+>pros: better captures changes made in GUI
+>cons: only catches changes as frequent as cronjob is run
+
+I currently use a cronjob with this script and run it every hour. All you need to do is add the script to your crontab. At the command prompt:
+
+1. type `contab -e`
+2. Press `i` to enter insert mode
+3. arrow down to the end of the file, under the line that says "# m h  dom mon dow   command"
+4. create a new line and paste `0 * * * * /home/username/github-backup.sh >/dev/null 2>&1`
+5. press `esc` to enter command mode, then type `:wq` to (w)rite the file and (q)uit.
+
+If you want to run the job more or less frequently, google crontab.
 
 
+#### Commit--Save Workflow
 
+This works pretty well EXCEPT that it does not get triggered by changes in the GUI. It will upload changes that occur in the GUI, but only after you go into the CLI and commit--save any changes.
 
+pros: captures changes instantly upon commit--save in CLI
+cons: does not automatically capture changes in GUI (you must commit and save in the CLI)
 
-That's all that's needed to back your config up to github. From here you have a few options, but the most automated way is to run the script each time you save a configuration using the CLI (not sure how/if this would work through the GUI).
+This is pretty simple, but easy to mess up. I won't give step-by-step directions here because it involves messing with some system files that could break your router. I'm going to assume if you know how to edit these files, you probably know what you are doing, so I'm only going to show an overview here.
 
-You just need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% down the file you will see `save ()` and something like
+You need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% down the file you will see `save ()` and something like
 
      save ()
      {
@@ -158,14 +181,8 @@ You just need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% 
        eval "sudo sg vyattacfg \"umask 0002 ; $save_cmd\""
        sync ; sync
        vyatta_cli_shell_api unmarkSessionUnsaved
-       /home/pconwell/github-backup.sh
+       /home/username/github-backup.sh
       }
-
-You just need to edit yours to add the last line `/home/pconwell/github-backup.sh` (assuming you saved your script from above at that location with that name -- which you probably didn't, so you will want to change your location and file name). Also, don't forget to make your script executable with `chmod +x github-backup.sh`.
-
-That's it. Now every time you configure then commit; save; exit; you will automatically back up your config file to github. Specifically, this happens during the `save` step. 
-
-I'm not really sure how changes are commited and saved in the gui, so this script may or may not work for changes made in the gui.
 
 ****
 
