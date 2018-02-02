@@ -62,6 +62,42 @@ firewall {
                 invalid enable
             }
         }
+        rule 30 {
+            action accept
+            description IKE
+            destination {
+                port 500
+            }
+            log disable
+            protocol udp
+        }
+        rule 40 {
+            action accept
+            description ESP
+            log disable
+            protocol esp
+        }
+        rule 50 {
+            action accept
+            description NAT-T
+            destination {
+                port 4500
+            }
+            log disable
+            protocol udp
+        }
+        rule 60 {
+            action accept
+            description L2TP
+            destination {
+                port 1701
+            }
+            ipsec {
+                match-ipsec
+            }
+            log disable
+            protocol udp
+        }
     }
     receive-redirects disable
     send-redirects enable
@@ -252,12 +288,13 @@ service {
             }
         }
         forwarding {
-            cache-size 150
-            listen-on switch0
+            cache-size 300
+            listen-on eth0
+            listen-on eth3
+            listen-on eth5
             name-server 192.168.1.2
             name-server 8.8.8.8
-            options localise-queries
-            options domain-needed
+            options listen-address=192.168.1.2
         }
     }
     gui {
@@ -352,4 +389,39 @@ system {
         }
     }
     time-zone America/Chicago
+}
+vpn {
+    ipsec {
+        ipsec-interfaces {
+            interface eth5
+            interface eth0
+        }
+    }
+    l2tp {
+        remote-access {
+            authentication {
+                local-users {
+                    username pconwell {
+                        password ****************
+                    }
+                }
+                mode local
+            }
+            client-ip-pool {
+                start 192.168.1.198
+                stop 192.168.1.199
+            }
+            dhcp-interface eth5
+            dns-servers {
+                server-1 192.168.1.2
+            }
+            ipsec-settings {
+                authentication {
+                    mode pre-shared-secret
+                    pre-shared-secret ****************
+                }
+            }
+            mtu 1472
+        }
+    }
 }
