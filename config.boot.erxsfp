@@ -393,7 +393,6 @@ system {
 vpn {
     ipsec {
         ipsec-interfaces {
-            interface eth5
             interface eth0
         }
     }
