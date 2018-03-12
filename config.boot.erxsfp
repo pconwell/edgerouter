@@ -206,6 +206,10 @@ service {
                 start 192.168.1.200 {
                     stop 192.168.1.250
                 }
+                static-mapping Galaxy-Tab-S2 {
+                    ip-address 192.168.1.193
+                    mac-address d0:87:e2:40:d4:a2
+                }
                 static-mapping NVR-P {
                     ip-address 192.168.1.100
                     mac-address 9c:8e:cd:0d:03:d1
