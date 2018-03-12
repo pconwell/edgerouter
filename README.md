@@ -6,9 +6,23 @@
 4. Create a file named `github-backup.sh` in your home directory with the following contents:
 
 ```bash
-hash='"'`curl  https://api.github.com/repos/username/repo/contents/config.file | grep sha | cut -d '"' -f4`'"'
+temp1='"'`curl --request GET --user "USER:TOKEN" https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp | jq -r '.content' | tr -d '\n'`'"'
+
+hash='"'`curl  https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp | grep sha | cut -d '"' -f4`'"'
 temp64='"'`/bin/cli-shell-api showCfg --show-hide-secrets | base64 | tr -d '\n'`'"'
-curl --request PUT --user "USER:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/username/repo/contents/config.file
+
+if [ "$temp1" == "$temp64" ];
+
+then
+
+	echo true;
+	
+else
+
+curl --request PUT --user "USER:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/user/edgerouter/contents/config.boot.erxsfp
+
+
+fi
 ```
 
 > Make sure to replace USER:TOKEN with your github username and auth token
@@ -53,15 +67,37 @@ This is the meat-and-potatoes of this whole project. Basically, this script is w
 I'll go through the bash script line-by-line, but when we are done it should looking something like this (with your username, token and repo url in place of mine):
 
 ```bash
+temp1='"'`curl --request GET --user "USER:TOKEN" https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp | jq -r '.content' | tr -d '\n'`'"'
+
 hash='"'`curl  https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp | grep sha | cut -d '"' -f4`'"'
 temp64='"'`/bin/cli-shell-api showCfg --show-hide-secrets | base64 | tr -d '\n'`'"'
-curl --request PUT --user "pconwell:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
+
+if [ "$temp1" == "$temp64" ];
+
+then
+
+	echo true;
+	
+else
+
+curl --request PUT --user "USER:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/user/edgerouter/contents/config.boot.erxsfp
+
+
+fi
 ```
+####
+First, we want to get the current config file that exists on github. This way we can check if the config file has changed.
+
+```bash
+curl --request GET --user "USER:TOKEN" https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
+```
+
+This returns a json format with some newline endings that will will want to remove, so we can use `jq -r '.content'` and `tr -d '\n'` to get the format we will need later on. For now, all we are doing is getting the current config, cleaning up the format a tiny bit and storing it. Nothing else happens during this step.
 
 
 #### Find Github API Hash
 
-First, we need to find the current sha hash of your current config file. This tells github what file we want to update. The github API for getting a file's information is `curl https://api.github.com/repos/user/repo/contents/file`. In my example, this would return something like: 
+Next, we need to find the current sha hash of your current config file. This tells github what file we want to update (assuming that it has changed). The github API for getting a file's information is `curl https://api.github.com/repos/user/repo/contents/file`. In my example, this would return something like: 
 
 ```bash
 $ curl  https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
@@ -103,9 +139,27 @@ We also want to strip out newline charaters or we will have issues when we conve
 
 Other than that, nothing special happends during this step.
 
+#### Check if remote config file (on github) matches our local config file
+
+We want to check if the existing config file on github is different than what we currently have locally. If they are the same, there is nothing else to do and we will just exit. I currently have it output the text 'true' for good measure and debugging - but that's really up to you if you want to do something else.
+
+If it's false (i.e. the remote file and the local file are different), it will go to the next step (the `else` portion).
+
+```bash
+if [ "$temp1" == "$temp64" ];
+
+then
+
+	echo true;
+	
+else
+  ...
+  
+```
+
 #### Upload config to github
 
-Now we are ready to upload our file to github. We will be using curl, which is basically a way to talk to websites through the CLI. There are a few different ways to use curl, but for our purposes we are concerned with the following:
+Assuing changes exist, we are now ready to upload our file to github. We will be using curl, which is basically a way to talk to websites through the CLI. There are a few different ways to use curl, but for our purposes we are concerned with the following:
 
 * `--request PUT` tells curl we are sending information (as opposed to recieving information)
 * `--user "name:token"` is our github username and the auth token we generated above
@@ -113,7 +167,7 @@ Now we are ready to upload our file to github. We will be using curl, which is b
 
 We end up with a command that looks like this:
 
-      curl --request PUT --user "pconwell:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/pconwell/edgerouter/contents/config.boot.erxsfp
+      curl --request PUT --user "USER:TOKEN" --data '{"message": "automated backup", "content": '"$temp64"', "sha": '"$hash"'}' https://api.github.com/repos/user/edgerouter/contents/config.boot.erxsfp
 
 You can see that the content of the API call is your config file sha hash. Make sure you are replacing your username, token and repo url as appropriate.
 
@@ -138,7 +192,7 @@ I will warn you, you probably don't want to use both. For some reason that I don
 
 #### Crontab
 
-This will automatically run the backup script at a set interval regardless if changes have been made or not. Don't worry, github will ignore config files that have not changed. In my example, I run the script once an hour, every hour, every day. 
+This will automatically run the backup script at a set interval regardless if changes have been made or not. The script will check if changes exist, so there (hopefully) won't be duplicate commits on github. In my example, I run the script once an hour, every hour, every day. 
 
 >pros: better captures changes made in GUI
 >cons: only catches changes as frequent as cronjob is run
@@ -163,7 +217,7 @@ cons: does not automatically capture changes in GUI (you must commit and save in
 
 This is pretty simple, but easy to mess up. I won't give step-by-step directions here because it involves messing with some system files that could break your router. I'm going to assume if you know how to edit these files, you probably know what you are doing, so I'm only going to show an overview here.
 
-You need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% down the file you will see `save ()` and something like
+You need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% down the file you will see `save ()` and change it to something like:
 
      save ()
      {
@@ -186,6 +240,6 @@ You need to edit `/etc/bash_completion.d/vyatta-cfg` using sudo. About 20% down 
 
 ****
 
-You can also use the `dnsmasq.adlist.conf` file to create a DNS level ad blocker, but you are probably better off installing pihole to a VM or docker or a raspberry pi.
+You can also use the `dnsmasq.adlist.conf` file to create a DNS level ad blocker, but you are probably better off installing pihole to a VM or docker or a raspberry pi or something - but using a DNS ad blocker within the ERX works pretty well.
 
-If you do want to use `dnsmasq.adlist.conf`, you just need to place that file on your edgerouter and then set up a cron job to run at whatever interval you wish. I'd suggest running the script either once a day or once a week.
+If you do want to use `dnsmasq.adlist.conf`, you just need to place that file on your edgerouter and then set up a cron job to run at whatever interval you wish. I'd suggest running the script either once a day or so.
