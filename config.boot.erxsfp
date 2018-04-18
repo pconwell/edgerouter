@@ -210,8 +210,12 @@ service {
                     ip-address 192.168.1.193
                     mac-address d0:87:e2:40:d4:a2
                 }
+                static-mapping LivingRmAppleTV {
+                    ip-address 192.168.1.53
+                    mac-address 9c:20:7b:ea:60:cd
+                }
                 static-mapping NVR-P {
-                    ip-address 192.168.1.100
+                    ip-address 192.168.1.200
                     mac-address 9c:8e:cd:0d:03:d1
                 }
                 static-mapping TCLRoku {
@@ -229,6 +233,18 @@ service {
                 static-mapping adblocker {
                     ip-address 192.168.1.2
                     mac-address 00:0c:29:04:cf:01
+                }
+                static-mapping camera_backdoor {
+                    ip-address 192.168.1.243
+                    mac-address 9c:8e:cd:0c:dc:b9
+                }
+                static-mapping camera_frontdoor {
+                    ip-address 192.168.1.242
+                    mac-address 9c:8e:cd:0c:dc:44
+                }
+                static-mapping camera_patio {
+                    ip-address 192.168.1.241
+                    mac-address 9c:8e:cd:0e:fa:84
                 }
                 static-mapping docker {
                     ip-address 192.168.1.24
