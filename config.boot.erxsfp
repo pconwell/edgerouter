@@ -412,6 +412,7 @@ system {
 }
 vpn {
     ipsec {
+        auto-firewall-nat-exclude disable
         ipsec-interfaces {
             interface eth0
         }
@@ -439,6 +440,7 @@ vpn {
                     mode pre-shared-secret
                     pre-shared-secret ****************
                 }
+                ike-lifetime 3600
             }
             mtu 1472
         }
